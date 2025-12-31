@@ -509,18 +509,36 @@ async function handleMitigationSubmit(e) {
             })
         });
         
-        const data = await response.json();
+        console.log('Mitigation response status:', response.status);
         
-        if (response.ok) {
-            document.getElementById('appliedTechnique').textContent = data.technique;
-            document.getElementById('fairModel').textContent = data.model;
-            document.getElementById('fairRMSE').textContent = data.rmse.toFixed(4);
-            document.getElementById('mitigationResults').classList.remove('hidden');
-            showToast('success', 'Mitigation Applied', `${data.technique} applied successfully`);
-        } else {
-            throw new Error(data.detail || 'Mitigation failed');
+        const responseText = await response.text();
+        console.log('Raw mitigation response:', responseText);
+        
+        if (!response.ok) {
+            let errorMsg = `Server error: ${response.status}`;
+            try {
+                const errorData = JSON.parse(responseText);
+                errorMsg = errorData.detail || errorMsg;
+            } catch (e) {
+                console.error('Could not parse error response');
+            }
+            throw new Error(errorMsg);
         }
+        
+        const data = JSON.parse(responseText);
+        console.log('Parsed mitigation response:', data);
+        
+        document.getElementById('appliedTechnique').textContent = data.technique;
+        document.getElementById('fairModel').textContent = data.model;
+        document.getElementById('fairRMSE').textContent = data.rmse.toFixed(4);
+        document.getElementById('mitigationResults').classList.remove('hidden');
+        
+        // Hide the form
+        document.getElementById('mitigationForm').style.display = 'none';
+        
+        showToast('success', 'Mitigation Applied', `${data.technique} applied successfully`);
     } catch (error) {
+        console.error('Mitigation error:', error);
         showToast('error', 'Mitigation Failed', error.message);
     } finally {
         hideLoading();
