@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bias Mitigation Platform</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <h1>Bias Mitigation Platform</h1>
+            </div>
+            <div class="api-status">
+                <span class="status-dot" id="apiStatus"></span>
+                <span id="apiStatusText">Checking...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Progress Steps -->
+        <div class="progress-bar">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <span>Upload Data</span>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <span>Configure</span>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <span>Upload Model</span>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-number">4</div>
+                <span>Analyze Bias</span>
+            </div>
+            <div class="step" data-step="5">
+                <div class="step-number">5</div>
+                <span>Mitigate</span>
+            </div>
+            <div class="step" data-step="6">
+                <div class="step-number">6</div>
+                <span>Compare</span>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="content">
+            <!-- Step 1: Upload Data -->
+            <section class="section active" id="step1">
+                <div class="card">
+                    <h2>📂 Upload Dataset</h2>
+                    <p>Upload your CSV dataset to begin the bias mitigation process</p>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📊</div>
+                        <p>Drag and drop your CSV file here</p>
+                        <p class="upload-hint">or</p>
+                        <input type="file" id="fileInput" accept=".csv" hidden>
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                            Choose File
+                        </button>
+                        <p id="uploadStatus" style="margin-top: 16px; color: #64748b; font-size: 14px;"></p>
+                    </div>
+
+                    <div id="dataInfo" class="data-info hidden">
+                        <h3>Dataset Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Rows:</span>
+                                <span id="dataRows">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Columns:</span>
+                                <span id="dataCols">-</span>
+                            </div>
+                        </div>
+                        <div class="columns-list">
+                            <h4>Available Columns:</h4>
+                            <div id="columnsList"></div>
+                        </div>
+                        <div id="missingValues" class="missing-values hidden">
+                            <h4>⚠️ Missing Values:</h4>
+                            <div id="missingList"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="nextStep(2)">
+                            Next: Configure Metadata
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2: Configure Metadata -->
+            <section class="section" id="step2">
+                <div class="card">
+                    <h2>⚙️ Configure Metadata</h2>
+                    <p>Define target variable, protected attributes, and features</p>
+
+                    <form id="metadataForm">
+                        <div class="form-group">
+                            <label for="targetColumn">Target Column *</label>
+                            <select id="targetColumn" required>
+                                <option value="">Select target column</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Protected Attributes *</label>
+                            <p class="field-hint">Select sensitive attributes (e.g., gender, race, age)</p>
+                            <div id="protectedAttributes" class="checkbox-group"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Feature Columns *</label>
+                            <p class="field-hint">Select features for model training</p>
+                            <div id="featureColumns" class="checkbox-group"></div>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(1)">
+                                Previous
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Save & Continue
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Step 3: Upload Model -->
+            <section class="section" id="step3">
+                <div class="card">
+                    <h2>🤖 Upload Pre-trained Model</h2>
+                    <p>Upload your trained model to generate biased predictions</p>
+
+                    <div class="info-box">
+                        <h4>📋 Model Compatibility</h4>
+                        <ul>
+                            <li><strong>Supported formats:</strong> .joblib, .pkl, .pickle</li>
+                            <li><strong>Model types:</strong> scikit-learn models (regression/classification)</li>
+                            <li><strong>Requirements:</strong> Model must have a <code>predict()</code> method</li>
+                            <li><strong>Best practice:</strong> Use joblib format for better compatibility</li>
+                        </ul>
+                        <p style="margin-top: 12px; font-size: 14px; color: #64748b;">
+                            <strong>Note:</strong> If you experience compatibility issues, re-save your model using: 
+                            <code>joblib.dump(model, 'model.joblib')</code>
+                        </p>
+                    </div>
+
+                    <div class="upload-area" id="modelUploadArea">
+                        <div class="upload-icon">🔮</div>
+                        <p>Drag and drop your model file</p>
+                        <p class="upload-hint">or</p>
+                        <input type="file" id="modelInput" accept=".joblib,.pkl,.pickle" hidden>
+                        <button class="btn btn-primary" onclick="document.getElementById('modelInput').click()">
+                            Choose Model File
+                        </button>
+                        <p style="margin-top: 12px; font-size: 14px; color: #64748b;">Supports: .joblib, .pkl, .pickle</p>
+                    </div>
+
+                    <div id="modelInfo" class="model-info hidden">
+                        <h3>✅ Model Uploaded Successfully</h3>
+                        <div class="result-cards">
+                            <div class="metric-card">
+                                <span class="metric-label">Biased Model RMSE:</span>
+                                <span class="metric-value" id="biasedRMSE">-</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Predictions Generated:</span>
+                                <span class="metric-value" id="predCount">-</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Load Method:</span>
+                                <span class="metric-value" id="loadMethod">-</span>
+                            </div>
+                        </div>
+                        <p class="success-message">Predictions generated and saved successfully</p>
+                        <div class="button-group">
+                            <button class="btn btn-secondary" onclick="prevStep(2)">
+                                Previous
+                            </button>
+                            <button class="btn btn-primary" onclick="nextStep(4)">
+                                Next: Analyze Bias
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 4: Analyze Bias -->
+            <section class="section" id="step4">
+                <div class="card">
+                    <h2>🔍 Bias Analysis</h2>
+                    <p>Comprehensive fairness metrics and visualizations</p>
+
+                    <button class="btn btn-primary btn-large" id="analyzeBiasBtn" onclick="analyzeBias()">
+                        🔬 Start Bias Analysis
+                    </button>
+
+                    <div id="biasResults" class="bias-results hidden">
+                        <div class="results-header">
+                            <h3>Analysis Results</h3>
+                            <p>Fairness metrics for protected attributes</p>
+                        </div>
+
+                        <div id="metricsContainer" class="metrics-container"></div>
+
+                        <div class="visualizations">
+                            <h3>📊 Visualizations</h3>
+                            <div id="plotsContainer" class="plots-container"></div>
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn btn-secondary" onclick="prevStep(3)">
+                                Previous
+                            </button>
+                            <button class="btn btn-primary" onclick="nextStep(5)">
+                                Next: Apply Mitigation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 5: Apply Mitigation -->
+            <section class="section" id="step5">
+                <div class="card">
+                    <h2>⚖️ Fairness Mitigation</h2>
+                    <p>Apply bias mitigation techniques to improve model fairness</p>
+
+                    <div class="mitigation-guide">
+                        <h3>Available Techniques:</h3>
+                        <div class="technique-grid">
+                            <div class="technique-card">
+                                <h4>1. None</h4>
+                                <span class="badge">Baseline</span>
+                                <p>No mitigation applied</p>
+                            </div>
+                            <div class="technique-card">
+                                <h4>2. Reweighing</h4>
+                                <span class="badge badge-pre">Pre-processing</span>
+                                <p>Adjust sample weights to balance outcomes</p>
+                            </div>
+                            <div class="technique-card">
+                                <h4>3. Disparate Impact</h4>
+                                <span class="badge badge-pre">Pre-processing</span>
+                                <p>Repair features to reduce discrimination</p>
+                            </div>
+                            <div class="technique-card">
+                                <h4>4. Reject Option</h4>
+                                <span class="badge badge-post">Post-processing</span>
+                                <p>Adjust predictions near decision boundary</p>
+                            </div>
+                            <div class="technique-card">
+                                <h4>5. Equalized Odds</h4>
+                                <span class="badge badge-post">Post-processing</span>
+                                <p>Balance TPR and FPR across groups</p>
+                            </div>
+                            <div class="technique-card">
+                                <h4>6. MetaFair</h4>
+                                <span class="badge badge-in">In-processing</span>
+                                <p>Train with fairness constraints</p>
+                            </div>
+                            <div class="technique-card">
+                                <h4>7. Adversarial Debiasing</h4>
+                                <span class="badge badge-in">In-processing</span>
+                                <p>Use adversarial network to remove bias</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="mitigationForm" class="mitigation-form">
+                        <div class="form-group">
+                            <label for="technique">Select Technique *</label>
+                            <select id="technique" required>
+                                <option value="">Choose a mitigation technique</option>
+                                <option value="1">1 - None (Baseline)</option>
+                                <option value="2">2 - Reweighing</option>
+                                <option value="3">3 - Disparate Impact Remover</option>
+                                <option value="4">4 - Reject Option Classification</option>
+                                <option value="5">5 - Equalized Odds</option>
+                                <option value="6">6 - MetaFair Classifier</option>
+                                <option value="7">7 - Adversarial Debiasing</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="protectedAttr">Protected Attribute *</label>
+                            <select id="protectedAttr" required>
+                                <option value="">Select protected attribute</option>
+                            </select>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(4)">
+                                Previous
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Apply Mitigation
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="mitigationResults" class="mitigation-results hidden">
+                        <h3>✅ Mitigation Applied Successfully</h3>
+                        <div class="result-cards">
+                            <div class="metric-card">
+                                <span class="metric-label">Technique:</span>
+                                <span class="metric-value" id="appliedTechnique">-</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Model:</span>
+                                <span class="metric-value" id="fairModel">-</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Fair Model RMSE:</span>
+                                <span class="metric-value" id="fairRMSE">-</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="nextStep(6)">
+                            Next: Compare Models
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 6: Compare Models -->
+            <section class="section" id="step6">
+                <div class="card">
+                    <h2>📈 Model Comparison</h2>
+                    <p>Compare biased and fair model performance</p>
+
+                    <button class="btn btn-primary btn-large" id="compareBtn" onclick="compareModels()">
+                        📊 Generate Comparison
+                    </button>
+
+                    <div id="comparisonResults" class="comparison-results hidden">
+                        <div class="comparison-section">
+                            <h3>Overall Performance Metrics</h3>
+                            <div class="comparison-grid">
+                                <div class="comparison-card">
+                                    <h4>Biased Model</h4>
+                                    <div class="metrics-list" id="biasedMetrics"></div>
+                                </div>
+                                <div class="comparison-card highlight">
+                                    <h4>Fair Model</h4>
+                                    <div class="metrics-list" id="fairMetrics"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="comparison-section">
+                            <h3>Group-wise Performance</h3>
+                            <div id="groupMetrics" class="group-metrics"></div>
+                        </div>
+
+                        <div class="downloads-section">
+                            <h3>📥 Download Results</h3>
+                            <div class="download-grid">
+                                <button class="btn btn-download" onclick="downloadPredictions('biased')">
+                                    📄 Biased Predictions
+                                </button>
+                                <button class="btn btn-download" onclick="downloadPredictions('fair')">
+                                    📄 Fair Predictions
+                                </button>
+                                <button class="btn btn-download" onclick="downloadModelCard()">
+                                    📋 Model Card
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn btn-secondary" onclick="prevStep(5)">
+                                Previous
+                            </button>
+                            <button class="btn btn-success" onclick="showSuccess()">
+                                🎉 Complete Pipeline
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p id="loadingText">Processing...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
