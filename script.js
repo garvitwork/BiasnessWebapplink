@@ -10,6 +10,35 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
+// Download Sample CSV
+function downloadSampleCSV() {
+    // CSV data from the processed_data.csv file
+    const csvContent = `Unnamed: 0,age,gender,caste_category,region,income_bracket,health_score,access_to_hospital,treatment_priority
+0,45,1,2,3,3,72.5,True,65.2
+1,32,0,1,2,2,68.3,True,58.7
+2,58,1,3,1,4,81.2,False,72.4
+3,29,0,2,3,1,63.8,True,54.3
+4,67,1,1,2,5,89.4,True,78.9
+5,41,0,3,1,3,75.1,False,66.8
+6,36,1,2,3,2,70.6,True,61.2
+7,52,0,1,2,4,77.9,True,69.5
+8,44,1,3,1,3,73.2,False,64.7
+9,61,0,2,3,5,85.6,True,75.3`;
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'processed_data.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    showToast('success', 'Download Started', 'Sample CSV file is downloading');
+}
+
 // API Status Check
 async function checkAPIStatus() {
     const statusDot = document.getElementById('apiStatus');

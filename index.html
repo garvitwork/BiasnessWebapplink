@@ -23,6 +23,45 @@
 
     <!-- Main Container -->
     <main class="main-container">
+        <!-- Sample Files Section -->
+        <div class="sample-files-section">
+            <div class="container">
+                <div class="sample-files-card">
+                    <div class="sample-files-header">
+                        <h3>📦 Sample Files for Testing</h3>
+                        <p>Download these sample files to test the bias mitigation pipeline</p>
+                    </div>
+                    <div class="sample-files-grid">
+                        <div class="sample-file-item">
+                            <div class="file-icon">📊</div>
+                            <div class="file-info">
+                                <h4>Sample Dataset</h4>
+                                <p>processed_data.csv (10,000 rows)</p>
+                                <p class="file-desc">Healthcare dataset with treatment priority predictions</p>
+                            </div>
+                            <button class="btn btn-download btn-small" onclick="downloadSampleCSV()">
+                                ⬇️ Download CSV
+                            </button>
+                        </div>
+                        <div class="sample-file-item">
+                            <div class="file-icon">🤖</div>
+                            <div class="file-info">
+                                <h4>Sample Model</h4>
+                                <p>biased_regressor_model.pkl (~20MB)</p>
+                                <p class="file-desc">Pre-trained regression model for predictions</p>
+                            </div>
+                            <a href="biased_regressor_model.pkl" download="biased_regressor_model.pkl" class="btn btn-download btn-small">
+                                ⬇️ Download Model
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sample-files-note">
+                        <strong>Note:</strong> Place the downloaded <code>biased_regressor_model.pkl</code> file in the same directory as your index.html
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Progress Steps -->
         <div class="progress-bar">
             <div class="step active" data-step="1">
